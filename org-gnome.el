@@ -5,7 +5,7 @@
 ;; Author: Nicolas Petton <petton.nicolas@gmail.com>
 ;; Keywords: org gnome
 ;; Package: org-gnome
-;; Package-Requires: ((org) (notify) (telepathy "0.1"))
+;; Package-Requires: ((notify "2010.8.20") (telepathy "0.1"))
 
 ;; Version: 0.1
 
