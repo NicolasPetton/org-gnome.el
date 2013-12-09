@@ -1,0 +1,3 @@
+* org-gnome.el
+
+Integrates orgmode with the GNOME desktop
