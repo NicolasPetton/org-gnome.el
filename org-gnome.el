@@ -7,7 +7,7 @@
 ;; Package: org-gnome
 ;; Package-Requires: ((notify "2010.8.20") (telepathy "0.1"))
 
-;; Version: 0.1
+;; Version: 0.2
 
 ;; org-gnome.el is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by
@@ -46,6 +46,12 @@
   't 
   "If `t' notify Org-Agenda appointments"
   :type 'boolean
+  :group 'org-gnome)
+
+(defcustom og-org-agenda-appt-headline
+  "TODO"
+  "Org Headline notified"
+  :type 'string
   :group 'org-gnome)
 
 (defcustom org-gnome-appointment-message
@@ -177,6 +183,8 @@ FUNCTION is called to fill the Gnome calendar with items."
     (setq og-global-org-gnome-minor-mode-enabled t)
     (when org-gnome-integrate-with-calendar
       (og-enable-gnome-calendar-integration))
+    (when org-gnome-notify-appointments
+      (og-enable-org-agenda-notifications))
     (when org-gnome-integrate-with-empathy
       (og-enable-telepathy-integration))))
 
@@ -236,16 +244,27 @@ FUNCTION is called to fill the Gnome calendar with items."
 ;;; Org-Agenda appointments notifications
 
 (defun og-enable-org-agenda-notifications ()
+  (appt-activate t)
   (setq	appt-display-format 'window
-	appt-disp-window-function 'og-notify-appt))
+	appt-disp-window-function 'og-notify-appt)
+  ;; Run once, activate and schedule refresh
+  (og-check-appt)
+  (run-at-time nil 600 'og-check-appt))
 
 (defun og-notify-appt (time-to-appt new-time msg)
   (notify 
    (format org-gnome-appointment-message min-to-app)
    msg
    :icon org-gnome-appointment-icon))
-
 
+(defun og-check-appt ()
+  (interactive)
+  (org-agenda-to-appt t `(:deadline 
+			  :scheduled
+			  (headline ,og-org-agenda-appt-headline))))
+
+
+
 ;;; Org-clock integration with Empathy
 
 (defun og-enable-telepathy-integration ()
