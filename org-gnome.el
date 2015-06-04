@@ -5,7 +5,7 @@
 ;; Author: Nicolas Petton <petton.nicolas@gmail.com>
 ;; Keywords: org gnome
 ;; Package: org-gnome
-;; Package-Requires: ((notify "2010.8.20") (telepathy "0.1") (gnome-calendar "0.1"))
+;; Package-Requires: ((alert "1.2") (telepathy "0.1") (gnome-calendar "0.1"))
 
 ;; Version: 0.3
 
@@ -20,7 +20,7 @@
 ;; License for more details.
 ;;
 
-;;; Commentary: 
+;;; Commentary:
 ;;; Open org-agenda on click on the calendar button of GnomeShell
 ;;; emacsclient --eval '(progn (org-agenda nil "a" nil) (delete-other-windows))'
 
@@ -28,23 +28,23 @@
 ;;; Code:
 
 (require 'org)
-(require 'notify)
+(require 'alert)
 (require 'dbus)
 (require 'telepathy)
 (require 'gnome-calendar)
 
-(defgroup org-gnome 
+(defgroup org-gnome
   nil
   "Provides Gnome integration for Org-mode")
 
-(defcustom org-gnome-integrate-with-calendar 
+(defcustom org-gnome-integrate-with-calendar
   nil
   "If `t' integrate Org-Agenda with the GnomeShell calendar"
   :type 'boolean
   :group 'org-gnome)
 
-(defcustom org-gnome-notify-appointments 
-  't 
+(defcustom org-gnome-notify-appointments
+  't
   "If `t' notify Org-Agenda appointments"
   :type 'boolean
   :group 'org-gnome)
@@ -68,7 +68,7 @@
   :group 'org-gnome)
 
 (defcustom org-gnome-integrate-with-empathy
-  't 
+  't
   "If `t' change the empathy status on clock-in/out"
   :type 'boolean
   :group 'org-gnome)
@@ -195,14 +195,14 @@
   (run-at-time nil 600 'og-check-appt))
 
 (defun og-notify-appt (time-to-appt new-time msg)
-  (notify 
+  (alert
    (format org-gnome-appointment-message min-to-app)
    msg
    :icon org-gnome-appointment-icon))
 
 (defun og-check-appt ()
   (interactive)
-  (org-agenda-to-appt t `(:deadline 
+  (org-agenda-to-appt t `(:deadline
 			  :scheduled
 			  (headline ,og-org-agenda-appt-headline))))
 
@@ -221,7 +221,7 @@
 (defun og-set-telepathy-status-busy ()
   (og-store-telepathy-presences)
   (telepathy-set-valid-accounts-presence "dnd" org-gnome-busy-status-message)
-  (notify 
+  (alert
    "IM Status changed"
    org-gnome-clock-in-message
    :icon org-gnome-status-busy-icon))
@@ -230,19 +230,19 @@
   (dolist (account (telepathy-get-valid-accounts))
     (let ((status (plist-get og-telepathy-statuses-plist (intern account))))
       (telepathy-set-account-presence account (cadr status) (caddr status))))
-  (notify 
+  (alert
    "IM Status changed"
    org-gnome-clock-out-message
    :icon org-gnome-status-available-icon))
 
 (defun og-store-telepathy-presences ()
   (dolist (account (telepathy-get-valid-accounts))
-    (setq og-telepathy-statuses-plist 
+    (setq og-telepathy-statuses-plist
 	  (plist-put og-telepathy-statuses-plist
 		     (intern account)
 		     (telepathy-get-account-presence account)))))
 
-    
+
 (provide 'org-gnome)
 
 ;;; org-gnome.el ends here
