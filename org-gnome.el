@@ -196,8 +196,8 @@
 
 (defun og-notify-appt (time-to-appt new-time msg)
   (alert
-   (format org-gnome-appointment-message min-to-app)
    msg
+   :title (format org-gnome-appointment-message min-to-app)
    :icon org-gnome-appointment-icon))
 
 (defun og-check-appt ()
